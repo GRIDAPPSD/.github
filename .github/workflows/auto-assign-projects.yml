@@ -1,0 +1,67 @@
+
+on:
+  repository_dispatch:
+    types: [org-workflow-bot]
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: SvanBoxel/organization-workflow@main
+      with:
+        id: ${{ github.event.client_payload.id }}
+        callback_url: ${{ github.event.client_payload.callback_url }}
+        sha: ${{ github.event.client_payload.sha }}
+        run_id: ${{ github.run_id }}
+        name: ${{ github.workflow }} # Default: name of workflow. This name is shown with the check, but can be changed.
+  add-to-project:
+    needs: [register]
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v0.3.0
+        with:
+          # You can target a repository in a different organization
+          # to the issue
+          project-url: https://github.com/orgs/GRIDAPPSD/projects/7
+          # project-url: https://github.com/orgs/<orgName>/projects/<projectNumber>
+          # github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          github-token: ${{ secrets.AUTO_PROJECT_PAT }}
+          # labeled: bug, needs-triage
+          # label-operator: OR
+  # add-to-project:
+  #   needs: [register]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2.3.4
+  #     with:
+  #       repository: ${{ github.event.client_payload.repository.full_name }}
+  #       ref: ${{ github.event.client_payload.sha }}
+  #       token: ${{ github.event.client_payload.token }}
+
+
+# - name: Organization workflow action
+#   uses: SvanBoxel/organization-workflows@1.4.0
+# name: Add bugs to bugs project
+
+# on:
+#   issues:
+#     types:
+#       - opened
+
+# jobs:
+#   add-to-project:
+#     name: Add issue to project
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/add-to-project@v0.3.0
+#         with:
+#           # You can target a repository in a different organization
+#           # to the issue
+#           project-url: https://github.com/orgs/eclipse-volttron/projects/3
+#           # project-url: https://github.com/orgs/<orgName>/projects/<projectNumber>
+#           # github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+#           github-token: ${{ secrets.AUTO_PROJECT_PAT }}
+#           # labeled: bug, needs-triage
+#           # label-operator: OR
