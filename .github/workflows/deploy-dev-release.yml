@@ -153,7 +153,7 @@ jobs:
           # we need to remove the v from the beginning of the tag.
           #   echo "Bump rule is ${{ inputs.bump-rule }}"
           #   echo "Given release version is ${{ inputs.release-version }}"
-          dt=$(date +%Y.%-m.1)
+          dt=$(date +%Y.%-m.0)
           if ! $(git tag -l "v*" = ''); then
             # uses -V which is version sort to keep it monotonically increasing.
             current_tag=$(git tag -l "v*" | grep --invert-match '-' | sort --reverse -V  | sed -n 1p)
