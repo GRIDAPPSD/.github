@@ -238,7 +238,7 @@ jobs:
 
       - name: Publish to pypi
         id: publish-to-pypi
-        if: github.repository_owner == 'GRIDAPPSD'
+        if: github.repository_owner == 'GRIDAPPSD' || github.repository_owner == 'PNNL-CIM-Tools'
         run: |
           echo "POETRY_PUBLISH_OPTIONS=''" >> $GITHUB_ENV
           poetry config pypi-token.pypi ${{ secrets.pypi-token }}
