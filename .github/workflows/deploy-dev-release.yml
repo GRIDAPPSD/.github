@@ -46,7 +46,7 @@ env:
 
 jobs:
 
-  deploy-release:
+  deploy-dev-release:
     runs-on: ubuntu-22.04
     permissions:
       contents: write  # To push a branch
