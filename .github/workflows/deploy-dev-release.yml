@@ -159,7 +159,7 @@ jobs:
             current_tag=$(git tag -l "v*" | grep --invert-match '-' | sort --reverse -V  | sed -n 1p)
             echo "current git tag is ${current_tag}"
             current_tag=${current_tag#?}
-            if [[ "$current_tag" < "$dt" ]]; then
+            if [[ "$current_tag" > "$dt" ]]; then
                 current_tag=$dt
             fi
             # current_tag is now the version we want to set our poetry version so
