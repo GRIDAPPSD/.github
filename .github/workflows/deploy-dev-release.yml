@@ -5,7 +5,7 @@ on:
     inputs:
       version-strategy:
         description: "Strategy for next version"
-        type: text
+        type: string
         # options:
         #   - DATE
         #   - PATCH
