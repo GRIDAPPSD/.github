@@ -5,13 +5,13 @@ on:
     inputs:
       version-strategy:
         description: "Strategy for next version"
-        type: choice
-        options:
-          - DATE
-          - PATCH
-          - MINOR
-          - MAJOR
-          -
+        type: text
+        # options:
+        #   - DATE
+        #   - PATCH
+        #   - MINOR
+        #   - MAJOR
+        #   -
         default: DATE
       dry-run:
         description: "Dry run only echo the next version. Does not create a release"
