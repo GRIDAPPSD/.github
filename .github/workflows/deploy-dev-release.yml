@@ -5,18 +5,22 @@ on:
     inputs:
       version-strategy:
         description: "Strategy for next version"
-        type: choice
-        options:
-          - DATE
-          - PATCH
-          - MINOR
-          - MAJOR
-          -
+        type: string
+        # options:
+        #   - DATE
+        #   - PATCH
+        #   - MINOR
+        #   - MAJOR
+        #   -
         default: DATE
       dry-run:
         description: "Dry run only echo the next version. Does not create a release"
         type: boolean
         default: false
+      letter:
+        description: "Letter to use for pre-release. If not given then it will be a pre-release"
+        type: string
+        default: 'a'
 
     # inputs:
     #   merge-strategy:
@@ -192,8 +196,8 @@ jobs:
           else
             # very first release. start with inputs.release-version
             
-            echo "First release. Setting tag as 0.1.0rc0"
             current_tag=$(date +%Y.%-m.1)
+            echo "First release. Setting tag as ${current_tag}"
             poetry version ${current_tag}
           fi
           
@@ -206,8 +210,8 @@ jobs:
           # we don't really persist right version in pyproject.toml to figure out the next version. we use git tags.
           git restore pyproject.toml
         
-      - name: Bump Version - DATE
-        if: inputs.version-strategy != 'DATE'
+      - name: Bump Version - NOT DATE
+        if: ${{ inputs.version-strategy != 'DATE' }}
         run: |
           # current_tag is the last tagged release in the repository.   From there
           # we need to remove the v from the beginning of the tag.
@@ -234,8 +238,8 @@ jobs:
           else
             # very first release. start with inputs.release-version
             
-            echo "First release. Setting tag as 0.1.0rc0"
-            current_tag=v0.1.0rc0
+            echo "First release. Setting tag as 0.1.0${input.letter}0"
+            current_tag="v0.1.0${input.letter}0"
             poetry version ${current_tag}
           fi
 
@@ -292,7 +296,7 @@ jobs:
           poetry build -vvv 
 
       - uses: ncipollo/release-action@v1.13.0
-        if: inputs.dry-run == 'false'
+        if: ${{ inputs.dry-run == 'false' }}
         with:
           artifacts: "dist/*.gz,dist/*.whl"
           artifactErrorsFailBuild: true
@@ -311,16 +315,17 @@ jobs:
 
       - name: Publish to pypi
         id: publish-to-pypi
-        if: (github.repository_owner == 'GRIDAPPSD' || github.repository_owner == 'PNNL-CIM-Tools') && inputs.dry-run == 'false'
+        if: (github.repository_owner == 'GRIDAPPSD' || github.repository_owner == 'PNNL-CIM-Tools') && ${{ inputs.dry-run == 'false' }}
         run: |
           echo "POETRY_PUBLISH_OPTIONS=''" >> $GITHUB_ENV
           poetry config pypi-token.pypi ${{ secrets.pypi-token }}
           poetry publish
 
       - name: Not publishing to pypi
-        if: inputs.dry-run == 'true'
+        if: ${{ inputs.dry-run == 'true' }}
         run: |
           echo "Not publishing to pypi"
+          echo "VERSION: ${{ env.NEW_TAG }}"
 
     #   - name: Publish to test-pypi
     #     id: publish-to-test-pypi
