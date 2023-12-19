@@ -206,7 +206,7 @@ jobs:
           # we don't really persist right version in pyproject.toml to figure out the next version. we use git tags.
           git restore pyproject.toml
         
-      - name: Bump Version - DATE
+      - name: Bump Version - NOT DATE
         if: inputs.version-strategy != 'DATE'
         run: |
           # current_tag is the last tagged release in the repository.   From there
@@ -321,6 +321,7 @@ jobs:
         if: inputs.dry-run == 'true'
         run: |
           echo "Not publishing to pypi"
+          echo "VERSION: ${{ env.NEW_TAG }}"
 
     #   - name: Publish to test-pypi
     #     id: publish-to-test-pypi
