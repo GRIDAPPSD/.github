@@ -68,7 +68,7 @@ jobs:
       pull-requests: write  # To create a PR from that branch
     steps:
       - run: echo "🍏 Version Strategy ${{ inputs.version-strategy }}."
-      - run: echo "🍏 Dry Run ${{ inputs.dry-run }}."
+      - run: echo "🐧 Dry Run ${{ inputs.dry-run }}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       # - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       # - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
@@ -204,7 +204,51 @@ jobs:
           # we don't want to update pyproject.toml yet. don't want this change to create merge conflict.
           # we don't really persist right version in pyproject.toml to figure out the next version. we use git tags.
           git restore pyproject.toml
+        
+      - name: Bump Version - DATE
+        if: inputs.version-strategy != 'DATE'
+        run: |
+          # current_tag is the last tagged release in the repository.   From there
+          # we need to remove the v from the beginning of the tag.
+          #   echo "Bump rule is ${{ inputs.bump-rule }}"
+          #   echo "Given release version is ${{ inputs.release-version }}"
+          if ! $(git tag -l "v*" = ''); then
+            # uses -V which is version sort to keep it monotonically increasing.
+            current_tag=$(git tag -l "v*" | grep --invert-match '-' | sort --reverse -V  | sed -n 1p)
+            echo "current git tag is ${current_tag}"
+            current_tag=${current_tag#?}
+            
+            # current_tag is now the version we want to set our poetry version so
+            # that we can bump the version
+            poetry version ${current_tag}
+            if [[ "${{ inputs.version-strategy }}" == 'PATCH' ]]; then
+                poetry version patch --no-interaction
+            elif [[ "${{ inputs.version-strategy }}" == 'MINOR' ]]; then
+                poetry version minor --no-interaction
+            elif [[ "${{ inputs.version-strategy }}" == 'MAJOR' ]]; then
+                poetry version major --no-interaction
+            fi
+            poetry version prerelease --no-interaction
+            
+          else
+            # very first release. start with inputs.release-version
+            
+            echo "First release. Setting tag as 0.1.0rc0"
+            current_tag=v0.1.0rc0
+            poetry version ${current_tag}
+          fi
+
+
           
+          NEW_TAG=v$(poetry version --short)
+
+          # Finally because we want to be able to use the variable in later
+          # steps we set a NEW_TAG environmental variable
+          echo "NEW_TAG=$(echo ${NEW_TAG})" >> $GITHUB_ENV
+          # we don't want to update pyproject.toml yet. don't want this change to create merge conflict.
+          # we don't really persist right version in pyproject.toml to figure out the next version. we use git tags.
+          git restore pyproject.toml
+        
 
     #   #--------------------------------------------------------------
     #   # Create a new releases/new_tag
