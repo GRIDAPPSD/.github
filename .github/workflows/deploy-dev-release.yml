@@ -11,6 +11,7 @@ on:
           - PATCH
           - MINOR
           - MAJOR
+          -
         default: DATE
       dry-run:
         description: "Dry run only echo the next version. Does not create a release"
