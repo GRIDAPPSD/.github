@@ -20,7 +20,7 @@ on:
       letter:
         description: "Letter to use for pre-release. If not given then it will be a pre-release"
         type: string
-        default: 'a'
+        default: 'b'
 
     # inputs:
     #   merge-strategy:
