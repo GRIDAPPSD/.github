@@ -12,7 +12,7 @@ on:
         #   - MINOR
         #   - MAJOR
         #   -
-        default: DATE
+        default: PATCH
       dry-run:
         description: "Dry run only echo the next version. Does not create a release"
         type: boolean
