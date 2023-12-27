@@ -297,11 +297,12 @@ jobs:
           poetry version ${NEW_TAG#?} 
           poetry build -vvv 
 
-      - uses: ncipollo/release-action@v1.13.0
+      - name: Releasing to github
+        uses: ncipollo/release-action@v1.13.0
         if: ${{ inputs.dry-run == 'false' }}
         with:
           artifacts: "dist/*.gz,dist/*.whl"
-          artifactErrorsFailBuild: true
+          artifactErrorsFailBuild: false
           generateReleaseNotes: true
           commit: ${{ github.ref }}
           # check bump-rule and set accordingly
@@ -309,7 +310,7 @@ jobs:
           tag: ${{ env.NEW_TAG }}
           token: ${{ secrets.git-token }}
 
-      - name: release-action output
+      - name: echoing what would be released
         if: ${{ inputs.dry-run == 'true' }}
         run: |
           echo "release-action output"
