@@ -299,7 +299,7 @@ jobs:
 
       - name: Releasing to github
         uses: ncipollo/release-action@v1.13.0
-        if: inputs.dry-run == 'false'
+        if: (inputs.dry-run == 'false' || inputs.dry-run == false)
         with:
           artifacts: "dist/*.gz,dist/*.whl"
           artifactErrorsFailBuild: false
@@ -318,7 +318,7 @@ jobs:
 
       - name: Publish to pypi
         id: publish-to-pypi
-        if: (github.repository_owner == 'GRIDAPPSD' || github.repository_owner == 'PNNL-CIM-Tools') && ${{ inputs.dry-run == 'false' }}
+        if: (github.repository_owner == 'GRIDAPPSD' || github.repository_owner == 'PNNL-CIM-Tools') && (inputs.dry-run == 'false' || inputs.dry-run == false)
         run: |
           echo "POETRY_PUBLISH_OPTIONS=''" >> $GITHUB_ENV
           poetry config pypi-token.pypi ${{ secrets.pypi-token }}
