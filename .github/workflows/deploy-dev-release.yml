@@ -310,7 +310,7 @@ jobs:
           token: ${{ secrets.git-token }}
 
       - name: release-action output
-        if: inputs.dry-run == 'true'
+        if: ${{ inputs.dry-run == 'true' }}
         run: |
           echo "release-action output"
           echo "creating pre-release for ${{ env.NEW_TAG }}"
