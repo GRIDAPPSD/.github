@@ -73,7 +73,7 @@ jobs:
       pull-requests: write  # To create a PR from that branch
     steps:
       - run: echo "🍏 Version Strategy ${{ inputs.version-strategy }}."
-      - run: echo "🐧 Dry Run ${{ inputs.dry-run }}."
+      - run: echo "🐧 Dry Run ${{ inputs.dry-run }} Comparison is ${{ inputs.dry-run == 'false'}}."
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       # - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       # - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
@@ -299,7 +299,7 @@ jobs:
 
       - name: Releasing to github
         uses: ncipollo/release-action@v1.13.0
-        if: ${{ inputs.dry-run == 'false' }}
+        if: inputs.dry-run == 'false'
         with:
           artifacts: "dist/*.gz,dist/*.whl"
           artifactErrorsFailBuild: false
